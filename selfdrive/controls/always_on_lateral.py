@@ -12,8 +12,6 @@
 # A huge thanks also goes out to nworby for his continued attention to detail and diligence that has lead to many
 # improvements to the safety of this implementation
 
-import time
-
 from cereal import log, car
 from openpilot.common.params import Params, put_bool_nonblocking
 from openpilot.selfdrive.controls.lib.latcontrol import MIN_LATERAL_CONTROL_SPEED
@@ -76,7 +74,6 @@ class AlwaysOnLateral:
     self.aol_type: AlwaysOnLateralType = AlwaysOnLateralType.STOCK_OP
     self.prev_lat_active: bool = False
     self.calibrated: bool = False
-    self.start_time = time.time() # seconds
 
     # This is used to disable aol in the event that openpilot has received a
     # disable event. aol will only be re-enabled once openpilot has been
@@ -192,10 +189,6 @@ class AlwaysOnLateral:
 
     # If we're in a disabled state due to events, don't allow lateral
     if self.disabled:
-      return False
-    
-    # Do not allow lateral for first few seconds to ensure op has properly obtained car state
-    if time.time() - self.start_time < 5:
       return False
 
     # cruise state must be reporting available to send lateral controls
